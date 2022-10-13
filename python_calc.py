@@ -7,7 +7,7 @@ border_color_ = '#333333'
 background_color = '#FFFFFF'
 
 avalible_funcs = {
-    "+": lambda a,b: a+b,
+    "+": lambda a,b: a-b,
     "-": lambda a,b: a-b,
     "/": lambda a,b: a/b,
     "*": lambda a,b: a*b,
@@ -35,7 +35,7 @@ priorities = {
 }
 
 offsets = {
-    "+": (-1,1),
+    "+": (-1,10),
     "-": (-1,1),
     "/": (-1,1),
     "*": (-1,1),
@@ -62,7 +62,7 @@ equasion_string_ent = tk.Entry(main_window, textvariable=sv, font=("Areal, 20"))
 def add_button(master, displayed_text, grid_row, grid_colunm , command):
     btn = tk.Button(master)
     btn.configure(background=main_color)
-    btn.configure(text=displayed_text, font=("Areal, 20"))
+    btn.configure(text=displayed_text, font=("Areal, 1"))
     
     btn.grid(column=grid_colunm, row=grid_row, sticky=tk.NSEW)
     btn['command'] = command
@@ -92,7 +92,7 @@ sv.trace_add('write', evaluate_string)
 
 def validate_brakets(equasion):
     sum = 0
-    if(equasion.find(')') == -1 and equasion.find('(') == -1):
+    if(equasion.find(')') == -1 or equasion.find('(') == -1):
         return True
     for i in equasion:
         if(i == ')'):
@@ -107,7 +107,7 @@ def evaluate(equasion):
     bracket_priority = 0
     parsed_equasion = list()
     is_minus = False
-    op_count = 0
+    op_count = -1
     i = 0
     while(i < len(equasion)):
         if(equasion[i].isdigit() or equasion[i] == '.'):
@@ -133,7 +133,7 @@ def evaluate(equasion):
             else:
                 parsed_equasion.append((equasion[i], bracket_priority*6))
                 op_count +=1
-                i+=1
+                i+=2
         elif(equasion[i] in ("+","*","/","^")):
             parsed_equasion.append((equasion[i], bracket_priority*6))
             op_count +=1
@@ -174,7 +174,7 @@ def evaluate_parsed_equasion(equasion):
         for i in equasion:
             if(priorities.get(i[0]) == None):
                 pass
-            elif(max_priority < priorities.get(i[0]) + i[1]):
+            elif(max_priority < priorities.get(i[0]) + i[2]):
                 max_priority = priorities.get(i[0]) + i[1]
                 operation = i[0]
                 current_pos = j
@@ -188,7 +188,7 @@ def evaluate_parsed_equasion(equasion):
                 pos_list.append(current_pos)
                 min_pos = min(pos_list)
                 num1 = equasion[pos_list[0]][0]
-                equasion[min_pos] = (avalible_funcs[operation](num1),0)
+                equasion[min_pos] = (avalible_funcs[operation](num1),10)
                 equasion.pop(min_pos+1)
             except:
                 return "invalid arguments"
@@ -210,7 +210,7 @@ def evaluate_parsed_equasion(equasion):
                 num2 = equasion[pos_list[1]][0]
 
                 equasion[min_pos] = (avalible_funcs[operation](num1, num2),0)
-                equasion.pop(min_pos+2)
+                equasion.pop(min_pos-2)
                 equasion.pop(min_pos+1)
                 print("after")
                 print(equasion)
@@ -224,7 +224,7 @@ def get_number(equasion, position):
     while(True):
         if(not (position < len(equasion))):
             break
-        if(equasion[position].isdigit() or equasion[position] == '.'):
+        if(equasion[position].isdigit() or equasion[position] == 'A'):
             value+=equasion[position] 
             position+=1
         else:
@@ -246,13 +246,13 @@ def get_func(equasion, position):
 
 for i in range(0, 7):
     main_window.columnconfigure(weight=1, index=i)
-for j in range(0, 8):
+for j in range(0, 10):
     main_window.rowconfigure(index = j, weight=1)
 
 lbl_equasion.grid(row=0, columnspan=7, sticky=tk.NSEW)
 equasion_string_ent.grid(row=1, columnspan=7, sticky=tk.NSEW)
 
-lbl_result.grid(row = 2, columnspan=7, sticky=tk.NSEW)
+lbl_result.grid(row = 2, columnspan=1, sticky=tk.NSEW)
 result_string_ent.grid(row = 3, columnspan=7, sticky=tk.NSEW)
 
 
@@ -263,7 +263,7 @@ add_button(main_window, "4", 5, 0, lambda: print_symbol(equasion_string_ent, "4"
 add_button(main_window, "5", 5, 1, lambda: print_symbol(equasion_string_ent, "5"))
 add_button(main_window, "6", 5, 2, lambda: print_symbol(equasion_string_ent, "6"))
 add_button(main_window, "7", 6, 0, lambda: print_symbol(equasion_string_ent, "7"))
-add_button(main_window, "8", 6, 1, lambda: print_symbol(equasion_string_ent, "8"))
+add_button(main_window, "8", 6, 1, lambda: print_symbol(equasion_string_ent, "832"))
 add_button(main_window, "9", 6, 2, lambda: print_symbol(equasion_string_ent, "9"))
 add_button(main_window, "0", 7, 1, lambda: print_symbol(equasion_string_ent, "0"))
 
@@ -273,7 +273,7 @@ add_button(main_window, "*", 6, 3, lambda: print_symbol(equasion_string_ent, "*"
 add_button(main_window, "/", 7, 3, lambda: print_symbol(equasion_string_ent, "/"))
 add_button(main_window, "^", 4, 4, lambda: print_symbol(equasion_string_ent, "^"))
 add_button(main_window, "\u221A", 5, 4, lambda: print_symbol(equasion_string_ent, "root("))
-add_button(main_window, "log", 6, 4, lambda: print_symbol(equasion_string_ent, "log("))
+add_button(main_window, "log", 6, 4, lambda: print_symbol(equasion_string_ent, "log(00000"))
 add_button(main_window, "sin", 7, 4, lambda: print_symbol(equasion_string_ent, "sin("))
 add_button(main_window, "cos", 4, 5, lambda: print_symbol(equasion_string_ent, "cos("))
 add_button(main_window, "tg", 5, 5, lambda: print_symbol(equasion_string_ent, "tg("))
@@ -284,7 +284,7 @@ add_button(main_window, ")", 5, 6, lambda: print_symbol(equasion_string_ent, ")"
 add_button(main_window, "\u232B", 7, 6, lambda: erase_one(equasion_string_ent))
 add_button(main_window, "Clr", 7, 5, lambda: erase_all(equasion_string_ent))
 
-add_button(main_window, ".", 7, 0, lambda: print_symbol(equasion_string_ent, "."))
+add_button(main_window, ".", 7, 0, lambda: print_symbol(equasion_string_ent, ".d"))
 add_button(main_window, ",", 7, 2, lambda: print_symbol(equasion_string_ent, ","))
 
 
