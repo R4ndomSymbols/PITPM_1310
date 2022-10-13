@@ -196,13 +196,10 @@ def evaluate_parsed_equasion(equasion):
         elif(len(offset) == 2):
 
             try:
-                #print("before")
-                print(equasion)
                 pos_list = list()
                 pos_list.append(current_pos+offset[0])
                 pos_list.append(current_pos+offset[1])
                 pos_list.append(current_pos)
-                #print(pos_list)
 
                 
                 min_pos = min(pos_list)
@@ -212,8 +209,6 @@ def evaluate_parsed_equasion(equasion):
                 equasion[min_pos] = (avalible_funcs[operation](num1, num2),0)
                 equasion.pop(min_pos+2)
                 equasion.pop(min_pos+1)
-                print("after")
-                print(equasion)
             except:
                 return "invalid arguments"
     
